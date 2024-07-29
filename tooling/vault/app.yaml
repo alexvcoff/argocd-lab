@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vault
+  namespace: tooling
+spec:
+  destination:
+    namespace: vault
+    server: https://kubernetes.default.svc
+  project: tooling
+  sources:
+    - chart: vault
+      helm:
+        valueFiles:
+          - $values/tooling/vault/values.yaml
+      repoURL: https://helm.releases.hashicorp.com
+      targetRevision: 0.27.0
+    - ref: values
+      repoURL: https://github.com/alexvcoff/argocd-lab.git
+      targetRevision: HEAD
+    # - path: apps/vault
+    #   repoURL: https://github.com/piomin/kubernetes-config-argocd.git
+    #   targetRevision: HEAD
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true
